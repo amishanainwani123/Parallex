@@ -27,9 +27,10 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Routes - Auto-redirect to dashboard if logged in */}
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route
-            path="/"
+            path="/login"
             element={
               <PublicRoute>
                 <Login />
@@ -44,7 +45,6 @@ function App() {
               </PublicRoute>
             }
           />
-          <Route path="/about" element={<LandingPage />} />
 
           {/* Protected Routes - Require Login */}
           <Route

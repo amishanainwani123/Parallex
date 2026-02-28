@@ -36,7 +36,7 @@ export default function LandingPage() {
         <h2 style={{ ...gradientTextStyle, letterSpacing: '4px', fontWeight: '900', fontSize: '28px' }}>
           VENDR
         </h2>
-        <Link to="/login" style={{
+        <Link to="/dashboard" style={{
           background: 'transparent',
           border: '1px solid #00e5ff',
           color: '#00e5ff',
@@ -45,7 +45,7 @@ export default function LandingPage() {
           fontWeight: 'bold',
           cursor: 'pointer',
           textDecoration: 'none'
-        }}>SIGN IN</Link>
+        }}>OPEN SEARCH / DASHBOARD</Link>
       </nav>
 
       {/* PAGE 1: HERO */}
@@ -125,7 +125,7 @@ export default function LandingPage() {
         }}>
           <h2 style={{ fontSize: '70px', fontWeight: '900', margin: '0' }}>READY TO GET STARTED?</h2>
           <p style={{ color: '#8e9aaf', margin: '25px 0 50px 0', fontSize: '20px' }}>Join thousands of students who never walk to an empty machine anymore.</p>
-          <Link to="/register" style={{
+          <Link to="/dashboard" style={{
             background: 'linear-gradient(90deg, #00e5ff, #ff7eb3)',
             color: 'black',
             border: 'none',
@@ -137,7 +137,7 @@ export default function LandingPage() {
             textDecoration: 'none',
             display: 'inline-block'
           }}>
-            FIND VENDINGS NEAR YOU →
+            START SEARCHING →
           </Link>
         </div>
       </section>

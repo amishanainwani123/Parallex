@@ -18,6 +18,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_products(db: Session):
     return db.query(models.Product).all()
 
+# Get All Machines
+def get_machines(db: Session):
+    return db.query(models.Machine).all()
+
 def buy_product(db: Session, product_id: int):
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     
@@ -32,7 +36,27 @@ def buy_product(db: Session, product_id: int):
     return product
 
 def search_product(db: Session, name: str):
-    return db.query(models.Product).filter(models.Product.name.ilike(f"%{name}%")).all()
+    results = db.query(models.Product, models.Machine).join(
+        models.Machine, models.Product.machine_id == models.Machine.id
+    ).filter(
+        models.Product.name.ilike(f"%{name}%")
+    ).all()
+    
+    # Map to schema-friendly dicts
+    search_results = []
+    for product, machine in results:
+        search_results.append({
+            "id": product.id,
+            "name": product.name,
+            "price": product.price,
+            "stock": product.stock,
+            "machine_id": machine.id,
+            "machine_name": machine.name,
+            "location": machine.location,
+            "latitude": machine.latitude,
+            "longitude": machine.longitude
+        })
+    return search_results
 
 def update_fcm_token(db: Session, user_id: int, fcm_token: str):
     user = db.query(models.User).filter(models.User.id == user_id).first()

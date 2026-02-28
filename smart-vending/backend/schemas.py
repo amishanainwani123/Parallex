@@ -15,6 +15,20 @@ class ProductResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class ProductSearchResponse(BaseModel):
+    id: int
+    name: str
+    price: float
+    stock: int
+    machine_id: int
+    machine_name: str
+    location: str
+    latitude: float
+    longitude: float
+
+    class Config:
+        from_attributes = True
+
 class PaymentVerification(BaseModel):
     order_id: str
     payment_id: str

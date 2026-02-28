@@ -27,7 +27,7 @@ app.add_middleware(
 
 app.include_router(user.router)
 app.include_router(product.router)
-app.include_router(machine.router)
+app.include_router(machine.router, prefix="/machines", tags=["Machines"])
 
 
 # DB Dependency

@@ -29,6 +29,11 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
     return R * c
 
+@router.get("/")
+def get_all_machines(db: Session = Depends(get_db)):
+    import crud
+    return crud.get_machines(db)
+
 @router.post("/nearest-machine")
 def find_nearest(user_lat: float, user_lon: float, db: Session = Depends(get_db)):
     machines = db.query(models.Machine).all()

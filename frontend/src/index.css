@@ -1,0 +1,13 @@
+:root {
+  --bg: #050a0e;
+  --card: #0d151c;
+  --primary: #00e5ff;
+  --text: #ffffff;
+}
+
+body {
+  margin: 0;
+  background-color: #050a0e;
+  color: #ffffff;
+  font-family: sans-serif;
+}

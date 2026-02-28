@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { LogIn, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
         try {
             await login(email, password);
             navigate('/dashboard');
-        } catch (err) {
+        } catch {
             setError('Invalid credentials or check your backend connection.');
         }
     };

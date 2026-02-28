@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { MapPin, Search, PackageMinus, ShoppingCart, LogOut } from 'lucide-react';
@@ -103,7 +103,7 @@ export default function Dashboard() {
                 handler: async function (response) {
                     try {
                         // 3. Verify Payment
-                        const verifyRes = await api.post(`/buy/${product.id}?user_id=${user.id}`, {
+                        await api.post(`/buy/${product.id}?user_id=${user.id}`, {
                             order_id: response.razorpay_order_id,
                             payment_id: response.razorpay_payment_id,
                             signature: response.razorpay_signature

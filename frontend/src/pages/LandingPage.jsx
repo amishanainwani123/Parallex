@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 
 export default function LandingPage() {
   const [words] = useState(['SNACK', 'DRINK', 'COFFEE', 'CANDY']);
   const [index, setIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,9 +77,57 @@ export default function LandingPage() {
           RIGHT NOW
         </h1>
 
-        <p style={{ color: '#8e9aaf', marginTop: '35px', maxWidth: '600px', fontSize: '18px', lineHeight: '1.6' }}>
+        <p style={{ color: '#8e9aaf', marginTop: '35px', maxWidth: '600px', fontSize: '18px', lineHeight: '1.6', marginBottom: '40px' }}>
           Search any product and instantly see which nearby vending machines have it in stock — with real-time availability and directions.
         </p>
+
+        {/* SEARCH BAR (Redirects to Login/Dash) */}
+        <form
+          onSubmit={(e) => { e.preventDefault(); navigate('/login'); }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: 'rgba(13, 21, 28, 0.8)',
+            border: '1px solid #1e2d3d',
+            borderRadius: '50px',
+            padding: '8px 8px 8px 24px',
+            width: '100%',
+            maxWidth: '550px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+          }}
+        >
+          <Search size={22} color="#00e5ff" style={{ marginRight: '15px' }} />
+          <input
+            type="text"
+            placeholder="What are you craving?"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'white',
+              width: '100%',
+              fontSize: '18px',
+              outline: 'none'
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              background: 'linear-gradient(90deg, #00e5ff, #00b0ff)',
+              color: 'black',
+              border: 'none',
+              padding: '14px 28px',
+              borderRadius: '40px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              cursor: 'pointer',
+              marginLeft: '10px'
+            }}
+          >
+            Find It
+          </button>
+        </form>
 
         <div style={{ marginTop: '50px', fontSize: '12px', color: '#4a5568', letterSpacing: '4px' }}>
           SCROLL ↓

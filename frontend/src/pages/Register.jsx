@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { User, Mail, Lock, UserPlus } from 'lucide-react';
 
 export default function Register() {
@@ -17,7 +17,7 @@ export default function Register() {
             await register(name, email, password);
             // Auto redirect to login after success
             navigate('/login');
-        } catch (err) {
+        } catch {
             setError('Registration failed. Email might already exist.');
         }
     };

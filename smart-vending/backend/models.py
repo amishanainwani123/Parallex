@@ -9,8 +9,8 @@ class User(Base):
     name = Column(String(100))
     email = Column(String(100), unique=True)
     password = Column(String(255))
+    fcm_token = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
-
 
 class Machine(Base):
     __tablename__ = "machines"
@@ -40,3 +40,13 @@ class Transaction(Base):
     product_id = Column(Integer, ForeignKey("products.id"))
     amount = Column(Float)
     payment_status = Column(String(50))
+
+class DemandRequest(Base):
+    __tablename__ = "demand_requests"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    machine_id = Column(Integer, ForeignKey("machines.id"))
+    product_name = Column(String(100))
+    is_fulfilled = Column(Integer, default=0) # 0 for pending, 1 for fulfilled
+    requested_at = Column(TIMESTAMP, server_default=func.now())

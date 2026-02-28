@@ -29,4 +29,11 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Incorrect password")
 
     token = auth.create_access_token({"sub": db_user.email})
-    return {"access_token": token}
+    return {"access_token": token, "user_id": db_user.id}
+
+@router.put("/{user_id}/fcm-token")
+def update_token(user_id: int, token_data: schemas.FCMTokenUpdate, db: Session = Depends(get_db)):
+    user = crud.update_fcm_token(db, user_id, token_data.fcm_token)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "FCM token updated successfully"}

@@ -16,7 +16,9 @@ export const AuthProvider = ({ children }) => {
         // Alternatively, setting it directly on initialization is better, but this works to fix the lint error.
         setTimeout(() => {
             if (token) {
-                setUser({ token, id: userId });
+                // Also fetch name from localStorage if we saved it
+                const userName = localStorage.getItem('user_name') || 'User';
+                setUser({ token, id: userId, name: userName });
             }
             setLoading(false);
         }, 0);
@@ -26,7 +28,12 @@ export const AuthProvider = ({ children }) => {
         const response = await api.post('/login', { name: "placeholder", email, password });
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('user_id', response.data.user_id);
-        setUser({ token: response.data.access_token, id: response.data.user_id });
+
+        // Let's assume the backend might return the name eventually, otherwise we fetch it or leave it as generic
+        const name = response.data.name || 'User';
+        localStorage.setItem('user_name', name);
+
+        setUser({ token: response.data.access_token, id: response.data.user_id, name });
         return response.data;
     };
 
@@ -37,6 +44,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user_id');
+        localStorage.removeItem('user_name');
         setUser(null);
     };
 

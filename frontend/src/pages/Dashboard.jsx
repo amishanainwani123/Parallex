@@ -361,7 +361,7 @@ export default function Dashboard() {
                         {view === 'machines' ? (
                             <>FIND YOUR <span style={gradientText}>CRAVINGS</span></>
                         ) : (
-                            <>{selectedMachine?.name.toUpperCase()} <span style={gradientText}>INVENTORY</span></>
+                            <>{selectedMachine?.location.toUpperCase()} <span style={gradientText}>INVENTORY</span></>
                         )}
                     </h1>
 
@@ -431,8 +431,7 @@ export default function Dashboard() {
                                         {distance && <div style={{ fontSize: '12px', color: '#8e9aaf' }}>{distance} meters</div>}
                                     </div>
 
-                                    <h3 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold' }}>{machine.name}</h3>
-                                    <p style={{ color: '#8e9aaf', margin: '0 0 25px 0', fontSize: '13px' }}>{machine.location}</p>
+                                    <h3 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold' }}>{machine.location}</h3>
 
                                     <div style={{ fontSize: '11px', fontWeight: '900', letterSpacing: '1px', color: '#ff7eb3', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                         VIEW INVENTORY <ArrowRight size={14} />

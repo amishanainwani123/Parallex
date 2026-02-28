@@ -16,7 +16,10 @@ def get_db():
 
 @router.post("/register")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.create_user(db, user)
+    try:
+        return crud.create_user(db, user)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Registration failed. Email might already exist.")
 
 @router.post("/login")
 def login(user: schemas.UserCreate, db: Session = Depends(get_db)):

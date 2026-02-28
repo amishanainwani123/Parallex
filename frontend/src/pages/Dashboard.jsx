@@ -144,7 +144,7 @@ export default function Dashboard() {
         let isComponentMounted = true;
 
         const connectWebSocket = () => {
-            ws = new WebSocket("ws://localhost:8000/ws");
+            ws = new WebSocket("wss://smart-vending-api.onrender.com/ws");
 
             ws.onopen = () => console.log("WebSocket Connected: Active");
 

@@ -3,11 +3,10 @@ import models, schemas, auth
 
 # Create User
 def create_user(db: Session, user: schemas.UserCreate):
-    hashed_password = auth.hash_password(user.password)
     db_user = models.User(
         name=user.name,
         email=user.email,
-        password=hashed_password
+        password=user.password
     )
     db.add(db_user)
     db.commit()

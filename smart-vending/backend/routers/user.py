@@ -28,7 +28,7 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if not db_user:
         raise HTTPException(status_code=400, detail="User not found")
 
-    if not auth.verify_password(user.password, db_user.password):
+    if user.password != db_user.password:
         raise HTTPException(status_code=400, detail="Incorrect password")
 
     token = auth.create_access_token({"sub": db_user.email})

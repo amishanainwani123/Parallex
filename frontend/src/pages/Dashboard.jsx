@@ -240,7 +240,13 @@ export default function Dashboard() {
                 prefill: { name: user.name || "Student User", email: user.email },
                 theme: { color: "#00e5ff" }
             };
-            new window.Razorpay(options).open();
+
+            // Intercept if we are using the generic Test Key and safely route to Simulated Page
+            if (options.key === 'test_key_id') {
+                navigate('/checkout', { state: { product, amount, order_id } });
+            } else {
+                new window.Razorpay(options).open();
+            }
         } catch (err) {
             alert(err.response?.data?.error || "Error initiating purchase");
         }

@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import CheckoutDemo from './pages/CheckoutDemo';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import './index.css';
@@ -52,6 +53,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutDemo />
               </ProtectedRoute>
             }
           />

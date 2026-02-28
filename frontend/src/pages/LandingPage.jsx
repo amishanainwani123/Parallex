@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
   const [words] = useState(['SNACK', 'DRINK', 'COFFEE', 'CANDY']);
@@ -20,9 +21,9 @@ export default function LandingPage() {
   };
 
   return (
-    <div style={{ 
-      backgroundColor: '#050a0e', 
-      color: 'white', 
+    <div style={{
+      backgroundColor: '#050a0e',
+      color: 'white',
       minHeight: '100vh',
       fontFamily: 'system-ui, sans-serif',
       backgroundImage: `linear-gradient(to right, #121a21 1px, transparent 1px), 
@@ -30,40 +31,41 @@ export default function LandingPage() {
       backgroundSize: '40px 40px',
       scrollBehavior: 'smooth'
     }}>
-      
+
       {/* NAVBAR */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '30px 60px', alignItems: 'center' }}>
         <h2 style={{ ...gradientTextStyle, letterSpacing: '4px', fontWeight: '900', fontSize: '28px' }}>
           VENDR
         </h2>
-        <button style={{ 
-          background: 'transparent', 
-          border: '1px solid #00e5ff', 
-          color: '#00e5ff', 
-          padding: '8px 24px', 
+        <Link to="/login" style={{
+          background: 'transparent',
+          border: '1px solid #00e5ff',
+          color: '#00e5ff',
+          padding: '8px 24px',
           borderRadius: '6px',
           fontWeight: 'bold',
-          cursor: 'pointer'
-        }}>SIGN IN</button>
+          cursor: 'pointer',
+          textDecoration: 'none'
+        }}>SIGN IN</Link>
       </nav>
 
       {/* PAGE 1: HERO */}
       <section style={{ height: '85vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-        <div style={{ 
+        <div style={{
           border: '1px solid',
           borderImageSource: 'linear-gradient(90deg, #00e5ff, #ff7eb3)',
           borderImageSlice: 1,
-          background: 'rgba(0, 229, 255, 0.05)', 
-          padding: '6px 16px', 
-          fontSize: '11px', 
+          background: 'rgba(0, 229, 255, 0.05)',
+          padding: '6px 16px',
+          fontSize: '11px',
           fontWeight: 'bold',
           letterSpacing: '2px',
           marginBottom: '30px',
-          color: '#00e5ff' 
+          color: '#00e5ff'
         }}>
           ● LIVE INVENTORY TRACKING
         </div>
-        
+
         <h1 style={{ fontSize: '110px', fontWeight: '900', margin: '0', lineHeight: '0.9', letterSpacing: '-2px' }}>
           FIND YOUR <br />
           <span style={gradientTextStyle}>
@@ -86,7 +88,7 @@ export default function LandingPage() {
         <h2 style={{ fontSize: '28px', marginBottom: '60px', fontWeight: 'bold' }}>
           EVERYTHING YOU <span style={gradientTextStyle}>NEED</span>
         </h2>
-        
+
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '25px' }}>
           {[
             { label: 'REAL-TIME', title: 'Live Inventory', desc: "Stock updates every 15 seconds across all campus machines." },
@@ -94,12 +96,12 @@ export default function LandingPage() {
             { label: 'ANALYTICS', title: 'Demand Insights', desc: "Data-driven insights on peak hours and popular items." },
             { label: 'AI POWERED', title: 'Smart Restock', desc: "AI recommendations ensure machines are stocked automatically." }
           ].map((item, i) => (
-            <div key={i} style={{ 
-              background: 'rgba(13, 21, 28, 0.7)', 
-              padding: '50px', 
-              borderRadius: '12px', 
-              border: '1px solid #1e2d3d', 
-              backdropFilter: 'blur(10px)' 
+            <div key={i} style={{
+              background: 'rgba(13, 21, 28, 0.7)',
+              padding: '50px',
+              borderRadius: '12px',
+              border: '1px solid #1e2d3d',
+              backdropFilter: 'blur(10px)'
             }}>
               <h5 style={{ ...gradientTextStyle, margin: '0 0 15px 0', fontSize: '13px', letterSpacing: '1px' }}>
                 — {item.label}
@@ -113,29 +115,31 @@ export default function LandingPage() {
 
       {/* PAGE 3: CTA */}
       <section style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ 
-          background: '#0d151c', 
-          width: '90%', 
+        <div style={{
+          background: '#0d151c',
+          width: '90%',
           maxWidth: '1100px',
-          padding: '100px 40px', 
-          borderRadius: '24px', 
-          textAlign: 'center', 
+          padding: '100px 40px',
+          borderRadius: '24px',
+          textAlign: 'center',
           border: '1px solid #1e2d3d'
         }}>
           <h2 style={{ fontSize: '70px', fontWeight: '900', margin: '0' }}>READY TO GET STARTED?</h2>
           <p style={{ color: '#8e9aaf', margin: '25px 0 50px 0', fontSize: '20px' }}>Join thousands of students who never walk to an empty machine anymore.</p>
-          <button style={{ 
-            background: 'linear-gradient(90deg, #00e5ff, #ff7eb3)', 
-            color: 'black', 
-            border: 'none', 
-            padding: '20px 60px', 
-            fontSize: '16px', 
-            fontWeight: '900', 
-            borderRadius: '8px', 
-            cursor: 'pointer'
+          <Link to="/register" style={{
+            background: 'linear-gradient(90deg, #00e5ff, #ff7eb3)',
+            color: 'black',
+            border: 'none',
+            padding: '20px 60px',
+            fontSize: '16px',
+            fontWeight: '900',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            display: 'inline-block'
           }}>
             FIND VENDINGS NEAR YOU →
-          </button>
+          </Link>
         </div>
       </section>
     </div>

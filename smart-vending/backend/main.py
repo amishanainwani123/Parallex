@@ -5,12 +5,13 @@ from database import engine, SessionLocal, Base
 from routers import user, product
 from routers import machine
 
-app.include_router(machine.router)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(user.router)
 app.include_router(product.router)
+app.include_router(machine.router)
+
 
 # DB Dependency
 def get_db():

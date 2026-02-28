@@ -12,6 +12,9 @@ export default function Dashboard() {
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
 
+    const [words] = useState(['SNACK', 'DRINK', 'COFFEE', 'CANDY']);
+    const [index, setIndex] = useState(0);
+
     // Load Razorpay Script
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
@@ -35,6 +38,13 @@ export default function Dashboard() {
         fetchProducts();
         findNearestMachine();
     }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % words.length);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, [words]);
 
     const fetchProducts = async () => {
         try {
@@ -147,12 +157,20 @@ export default function Dashboard() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#050a0e', color: 'white', fontFamily: 'system-ui, sans-serif' }}>
-
+        <div style={{
+            backgroundColor: '#050a0e',
+            color: 'white',
+            minHeight: '100vh',
+            fontFamily: 'system-ui, sans-serif',
+            backgroundImage: `linear-gradient(to right, #121a21 1px, transparent 1px), 
+                              linear-gradient(to bottom, #121a21 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+            scrollBehavior: 'smooth'
+        }}>
             {/* NAVBAR */}
-            <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 40px', alignItems: 'center', borderBottom: '1px solid #1e2d3d' }}>
-                <h2 style={{ ...gradientTextStyle, letterSpacing: '2px', fontWeight: '900', fontSize: '24px', margin: 0 }}>
-                    VENDR <span style={{ fontSize: '14px', letterSpacing: '0', color: '#8e9aaf', WebkitTextFillColor: '#8e9aaf' }}>DASHBOARD</span>
+            <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '30px 60px', alignItems: 'center' }}>
+                <h2 style={{ ...gradientTextStyle, letterSpacing: '4px', fontWeight: '900', fontSize: '28px' }}>
+                    VENDR
                 </h2>
 
                 <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: '#8e9aaf', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
@@ -160,7 +178,33 @@ export default function Dashboard() {
                 </button>
             </nav>
 
-            <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+            {/* HERO SECTION */}
+            <section style={{ padding: '60px 60px 20px 60px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{
+                    border: '1px solid',
+                    borderImageSource: 'linear-gradient(90deg, #00e5ff, #ff7eb3)',
+                    borderImageSlice: 1,
+                    background: 'rgba(0, 229, 255, 0.05)',
+                    padding: '6px 16px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    letterSpacing: '2px',
+                    marginBottom: '30px',
+                    color: '#00e5ff'
+                }}>
+                    ● LIVE INVENTORY TRACKING
+                </div>
+
+                <h1 style={{ fontSize: '70px', fontWeight: '900', margin: '0', lineHeight: '0.9', letterSpacing: '-2px' }}>
+                    FIND YOUR <br />
+                    <span style={gradientTextStyle}>
+                        {words[index]}
+                    </span> <br />
+                    RIGHT NOW
+                </h1>
+            </section>
+
+            <div style={{ padding: '20px 60px', maxWidth: '1400px', margin: '0 auto' }}>
 
                 {/* LOCATION HEADER */}
                 {nearestMachine && (

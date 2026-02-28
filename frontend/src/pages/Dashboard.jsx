@@ -138,6 +138,47 @@ export default function Dashboard() {
         }
     };
 
+    // Global WebSocket Real-Time Sync
+    useEffect(() => {
+        const ws = new WebSocket("ws://localhost:8000/ws");
+
+        ws.onopen = () => {
+            console.log("WebSocket Connected: Listening for Real-Time Inventory Syncs");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("WebSocket Broadcast Received:", data);
+
+            if (data.action === "inventory_deducted") {
+                // Instantly update the visual state without needing to refresh the browser
+                // Applies to both Local Inventory view and Global Search view
+
+                setProducts(prev => prev.map(p =>
+                    p.id === data.product_id && p.stock > 0
+                        ? { ...p, stock: p.stock - 1 }
+                        : p
+                ));
+
+                setGlobalSearchResults(prev => prev.map(p =>
+                    p.id === data.product_id && p.stock > 0
+                        ? { ...p, stock: p.stock - 1 }
+                        : p
+                ));
+
+                // Optional: Trigger a tiny visual flash bang effect or toast notification here in the future
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, []);
+
     const searchProducts = async (query) => {
         try {
             setLoading(true);
@@ -172,7 +213,7 @@ export default function Dashboard() {
         if (!res) return alert("Razorpay SDK failed to load. Are you online?");
 
         try {
-            const orderRes = await api.post(`/ create - order / ${product.id} `);
+            const orderRes = await api.post(`/create-order/${product.id}`);
             const { order_id, amount, currency } = orderRes.data;
 
             const options = {
@@ -184,7 +225,7 @@ export default function Dashboard() {
                 order_id: order_id,
                 handler: async function (response) {
                     try {
-                        await api.post(`/ buy / ${product.id}?user_id = ${user.id} `, {
+                        await api.post(`/buy/${product.id}?user_id=${user.id}`, {
                             order_id: response.razorpay_order_id,
                             payment_id: response.razorpay_payment_id,
                             signature: response.razorpay_signature
@@ -218,6 +259,16 @@ export default function Dashboard() {
         }
     };
 
+    // Hardware Simulation Demo
+    const handleSimulatePhysicalPurchase = async (product) => {
+        try {
+            await api.post(`/machines/sync-offline-sales?product_id=${product.id}`);
+            // Do NOT call fetchInventory() here! Let the WebSocket organically push the UI update to prove it works.
+        } catch (err) {
+            alert(err.response?.data?.error || "Error attempting to simulate offline hardware");
+        }
+    };
+
     // Filter Logic for Machines View
     const filteredMachines = machines;
 
@@ -239,20 +290,29 @@ export default function Dashboard() {
         return result;
     }, [filteredMachines, userLocation]);
 
-    // Global Search sorting
+    // Global Search sorting (Distance, then by Stock)
     const sortedGlobalResults = React.useMemo(() => {
         let result = [...globalSearchResults];
-        if (userLocation) {
-            result.sort((a, b) => {
-                const distA = parseFloat(calculateDistance(userLocation.lat, userLocation.lon, a.latitude, a.longitude));
-                const distB = parseFloat(calculateDistance(userLocation.lat, userLocation.lon, b.latitude, b.longitude));
+        // Sort first by stock descending, then by distance (if we have location)
+        result.sort((a, b) => {
+            if (userLocation) {
+                const distA = parseFloat(calculateDistance(userLocation.lat, userLocation.lon, a.latitude, a.longitude)) || Infinity;
+                const distB = parseFloat(calculateDistance(userLocation.lat, userLocation.lon, b.latitude, b.longitude)) || Infinity;
+                // If distances are roughly equal (within 50 meters), sort by stock
+                if (Math.abs(distA - distB) < 50) {
+                    return b.stock - a.stock;
+                }
                 return distA - distB;
-            });
-        }
+            }
+            return b.stock - a.stock; // Default sort is just stock descending
+        });
         return result;
     }, [globalSearchResults, userLocation]);
 
-    const filteredProducts = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+    // Inventory view sorting (Strictly Stock descending, matching Search query)
+    const filteredProducts = products
+        .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => b.stock - a.stock);
 
     const gradientText = {
         background: 'linear-gradient(90deg, #00e5ff, #ff7eb3)',
@@ -476,9 +536,18 @@ export default function Dashboard() {
 
                                 <div style={{ marginTop: 'auto' }}>
                                     {p.stock > 0 ? (
-                                        <button onClick={() => handleBuy(p)} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: 'none', background: 'linear-gradient(90deg, #00e5ff, #00b0ff)', color: 'black', fontWeight: 'bold', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                                            <ShoppingCart size={18} /> Buy Now
-                                        </button>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <button onClick={() => handleBuy(p)} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: 'none', background: 'linear-gradient(90deg, #00e5ff, #00b0ff)', color: 'black', fontWeight: 'bold', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                                                <ShoppingCart size={18} /> Buy Now
+                                            </button>
+
+                                            {/* Offline Hardware Demo Button */}
+                                            <button
+                                                onClick={() => handleSimulatePhysicalPurchase(p)}
+                                                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px dashed #4caf50', background: 'rgba(76, 175, 80, 0.1)', color: '#4caf50', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                                                📲 Simulate Physical Purchase
+                                            </button>
+                                        </div>
                                     ) : (
                                         <button onClick={() => handleRequestRefill(p)} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #1e2d3d', background: 'transparent', color: '#8e9aaf', fontWeight: 'bold', cursor: 'pointer' }}>
                                             Request Refill

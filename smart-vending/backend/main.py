@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 import models, crud, schemas
 from database import engine, SessionLocal, Base
 from routers import user, product
 from routers import machine
+from websocket_manager import manager
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -53,3 +54,14 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def get_products(db: Session = Depends(get_db)):
     return crud.get_products(db)
 
+# WebSocket connection endpoint
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # We don't expect the frontend to send us text data, just listen.
+            # But we must hold the connection open.
+            data = await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)

@@ -4,6 +4,8 @@ import crud
 from database import SessionLocal
 from fastapi import Request, HTTPException
 import notifications
+import json
+from websocket_manager import manager
 
 router = APIRouter()
 
@@ -32,7 +34,7 @@ def create_order(product_id: int, db: Session = Depends(get_db)):
     return {"order_id": order["id"], "amount": order["amount"], "currency": order["currency"]}
 
 @router.post("/buy/{product_id}")
-def buy(product_id: int, payment_data: schemas.PaymentVerification, user_id: int, db: Session = Depends(get_db)):
+async def buy(product_id: int, payment_data: schemas.PaymentVerification, user_id: int, db: Session = Depends(get_db)):
     # Verify payment signature
     is_valid = payment.verify_razorpay_payment(
         payment_data.order_id, 
@@ -63,7 +65,15 @@ def buy(product_id: int, payment_data: schemas.PaymentVerification, user_id: int
             # Low stock alert (Mock sending to vendor)
             print(f"ALERT: Stock for {result.name} is low ({result.stock} left).")
 
+    # Broadcast to all connected WebSockets that inventory changed
+    await manager.broadcast(json.dumps({
+        "action": "inventory_deducted",
+        "product_id": product_id,
+        "machine_id": result.machine_id if hasattr(result, 'machine_id') else None
+    }))
+
     return {"message": "Purchase successful", "product": result.name}
+
 
 @router.get("/search")
 def search(name: str, db: Session = Depends(get_db)):

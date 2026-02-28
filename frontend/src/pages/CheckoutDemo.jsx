@@ -30,8 +30,15 @@ export default function CheckoutDemo() {
         await new Promise(r => setTimeout(r, 2000));
 
         try {
-            await api.post(`/buy/${product.id}?user_id=${user.id}`, {
-                order_id: order_id,
+            const finalUserId = user?.id || localStorage.getItem('user_id');
+            if (!finalUserId || finalUserId === 'undefined' || finalUserId === 'null') {
+                alert("Stale Cache: Please manually refresh the page (F5 / Cmd+R) to apply the hotfix and verify your login.");
+                navigate('/');
+                return;
+            }
+
+            await api.post(`/buy/${product.id}?user_id=${finalUserId}`, {
+                order_id: order_id || "demo_order",
                 payment_id: `pay_DEMO_${Math.floor(Math.random() * 999999)}`,
                 signature: 'demo_simulated_signature'
             });
@@ -42,7 +49,11 @@ export default function CheckoutDemo() {
                 navigate('/dashboard');
             }, 1800);
         } catch (err) {
-            alert(err.response?.data?.error || "Simulation Error");
+            let errorMsg = err.response?.data?.error;
+            if (!errorMsg && err.response?.data?.detail) {
+                errorMsg = JSON.stringify(err.response.data.detail);
+            }
+            alert(`Purchase Failed: ${errorMsg || err.message || "Simulation Error"}`);
             setLoading(false);
             setStatus('idle');
         }

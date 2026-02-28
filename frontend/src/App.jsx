@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CheckoutDemo from './pages/CheckoutDemo';
+import Profile from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import './index.css';
@@ -61,6 +62,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CheckoutDemo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

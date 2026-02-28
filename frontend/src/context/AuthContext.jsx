@@ -15,10 +15,16 @@ export const AuthProvider = ({ children }) => {
         // Using setTimeout resolves the synchronous cascading render warning
         // Alternatively, setting it directly on initialization is better, but this works to fix the lint error.
         setTimeout(() => {
-            if (token) {
+            if (token && userId && userId !== 'undefined' && userId !== 'null') {
                 // Also fetch name from localStorage if we saved it
                 const userName = localStorage.getItem('user_name') || 'User';
                 setUser({ token, id: userId, name: userName });
+            } else {
+                // Stale session, force logout to get fresh ID
+                localStorage.removeItem('token');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('user_name');
+                setUser(null);
             }
             setLoading(false);
         }, 0);

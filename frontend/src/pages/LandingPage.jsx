@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/useAuth';
+import { User } from 'lucide-react';
+
 export default function LandingPage() {
+  const { user } = useAuth();
   const [words] = useState(['SNACK', 'DRINK', 'COFFEE', 'CANDY']);
   const [index, setIndex] = useState(0);
 
@@ -36,16 +40,35 @@ export default function LandingPage() {
         <h2 style={{ ...gradientTextStyle, letterSpacing: '4px', fontWeight: '900', fontSize: '28px' }}>
           VENDR
         </h2>
-        <Link to="/dashboard" style={{
-          background: 'transparent',
-          border: '1px solid #00e5ff',
-          color: '#00e5ff',
-          padding: '8px 24px',
-          borderRadius: '6px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          textDecoration: 'none'
-        }}>OPEN SEARCH / DASHBOARD</Link>
+
+        <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
+          {user && (
+            <Link to="/profile" style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#00e5ff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 'bold',
+              textDecoration: 'none',
+              cursor: 'pointer'
+            }}>
+              <User size={18} /> MY PROFILE
+            </Link>
+          )}
+
+          <Link to="/dashboard" style={{
+            background: 'transparent',
+            border: '1px solid #00e5ff',
+            color: '#00e5ff',
+            padding: '8px 24px',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            textDecoration: 'none'
+          }}>OPEN SEARCH / DASHBOARD</Link>
+        </div>
       </nav>
 
       {/* PAGE 1: HERO */}

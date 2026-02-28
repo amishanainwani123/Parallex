@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { MapPin, Search, PackageMinus, ShoppingCart, LogOut, Navigation, ArrowRight } from 'lucide-react';
+import { MapPin, Search, PackageMinus, ShoppingCart, LogOut, Navigation, ArrowRight, User } from 'lucide-react';
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
@@ -138,44 +138,47 @@ export default function Dashboard() {
         }
     };
 
-    // Global WebSocket Real-Time Sync
+    // Global WebSocket Real-Time Sync with Auto-Reconnect
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8000/ws");
+        let ws;
+        let isComponentMounted = true;
 
-        ws.onopen = () => {
-            console.log("WebSocket Connected: Listening for Real-Time Inventory Syncs");
+        const connectWebSocket = () => {
+            ws = new WebSocket("ws://localhost:8000/ws");
+
+            ws.onopen = () => console.log("WebSocket Connected: Active");
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.action === "inventory_deducted") {
+                    setProducts(prev => prev.map(p =>
+                        p.id === data.product_id && p.stock > 0 ? { ...p, stock: p.stock - 1 } : p
+                    ));
+                    setGlobalSearchResults(prev => prev.map(p =>
+                        p.id === data.product_id && p.stock > 0 ? { ...p, stock: p.stock - 1 } : p
+                    ));
+                    // Show a quick transient UI toast confirming the Sync!
+                    const spanMessage = document.createElement("div");
+                    spanMessage.innerText = "⚡ Offline Hardware Sync Received!";
+                    spanMessage.style = "position:fixed;bottom:20px;right:20px;background:#00e5ff;color:black;padding:12px 24px;border-radius:8px;font-weight:bold;z-index:9999;box-shadow:0 0 20px #00e5ff;";
+                    document.body.appendChild(spanMessage);
+                    setTimeout(() => spanMessage.remove(), 3500);
+                }
+            };
+
+            ws.onclose = () => {
+                if (isComponentMounted) {
+                    console.log("WebSocket Disconnected. Reconnecting in 3s...");
+                    setTimeout(connectWebSocket, 3000); // Auto Reconnect
+                }
+            };
         };
 
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log("WebSocket Broadcast Received:", data);
-
-            if (data.action === "inventory_deducted") {
-                // Instantly update the visual state without needing to refresh the browser
-                // Applies to both Local Inventory view and Global Search view
-
-                setProducts(prev => prev.map(p =>
-                    p.id === data.product_id && p.stock > 0
-                        ? { ...p, stock: p.stock - 1 }
-                        : p
-                ));
-
-                setGlobalSearchResults(prev => prev.map(p =>
-                    p.id === data.product_id && p.stock > 0
-                        ? { ...p, stock: p.stock - 1 }
-                        : p
-                ));
-
-                // Optional: Trigger a tiny visual flash bang effect or toast notification here in the future
-            }
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket Error:", error);
-        };
+        connectWebSocket();
 
         return () => {
-            ws.close();
+            isComponentMounted = false;
+            if (ws) ws.close();
         };
     }, []);
 
@@ -339,9 +342,15 @@ export default function Dashboard() {
                     <div></div> // Spacing
                 )}
 
-                <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: '#8e9aaf', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                    <LogOut size={16} /> SIGN OUT
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <button onClick={() => navigate('/profile')} style={{ background: 'transparent', border: 'none', color: '#00e5ff', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                        <User size={18} /> MY PROFILE
+                    </button>
+
+                    <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: '#8e9aaf', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                        <LogOut size={16} /> SIGN OUT
+                    </button>
+                </div>
             </div>
 
             <div style={{ maxWidth: '900px', margin: '0 auto', paddingTop: '100px', paddingBottom: '40px', px: '20px' }}>

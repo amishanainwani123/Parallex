@@ -40,3 +40,37 @@ def update_token(user_id: int, token_data: schemas.FCMTokenUpdate, db: Session =
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "FCM token updated successfully"}
+
+@router.get("/{user_id}/purchases")
+def get_user_purchases(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    transactions = db.query(models.Transaction, models.Product).join(
+        models.Product, models.Transaction.product_id == models.Product.id
+    ).filter(
+        models.Transaction.user_id == user_id,
+        models.Transaction.payment_status == "Completed"
+    ).all()
+
+    total_spent = sum(t.Transaction.amount for t in transactions)
+
+    history = [
+        {
+            "id": t.Transaction.id,
+            "product_name": t.Product.name,
+            "amount": t.Transaction.amount,
+            "status": t.Transaction.payment_status
+        }
+        for t in transactions
+    ]
+
+    return {
+        "user": {
+            "name": user.name,
+            "email": user.email
+        },
+        "total_spent": total_spent,
+        "history": history
+    }

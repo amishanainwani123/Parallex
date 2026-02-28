@@ -53,6 +53,16 @@ async def buy(product_id: int, payment_data: schemas.PaymentVerification, user_i
     if result == "Out of stock":
         return {"error": "Out of stock"}
         
+    # Create the persistent transaction record for Profile History
+    transaction = models.Transaction(
+        user_id=user_id,
+        product_id=product_id,
+        amount=result.price,
+        payment_status="Completed"
+    )
+    db.add(transaction)
+    db.commit()
+
     # FCM Notification on successful purchase (and alert if low stock)
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user and user.fcm_token:
